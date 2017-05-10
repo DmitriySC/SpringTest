@@ -29,7 +29,7 @@
             $('#customer').autocomplete ({
                 minlength: 2,
                 delay: 500,
-                /*source: function (request, response){
+                source: function (request, response){
                     $.getJSON("${editCaseUrl}/ajax/findcustomer", request, function (result){
                         response($.map(result, function (item) {
                             return {
@@ -38,8 +38,8 @@
                             }
                         }));
                     });
-                }*/
-                source: function(request, response){
+                }
+                /*source: function(request, response){
                     $.ajax({
                         url: "${editCaseUrl}/ajax/findcustomer",
                         dataType: "json",
@@ -57,9 +57,9 @@
                         }
                         /*select:function (event, ui){
                             log( "Selected: " + ui.item.value + " aka " + ui.item.id );
-                        }*/
+                        }
                     });
-                }
+                }*/
             });
         });
     </script>
