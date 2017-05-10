@@ -1,0 +1,107 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:spring="http://www.springframework.org/tags"
+          xmlns:form="http://www.springframework.org/tags/form"
+          xmlns="http://www.w3.org/1999/xhtml" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:message code="label_case_info" var="labelCaseInfo"/>
+    <spring:message code="label_client_client" var="labelClient"/>
+    <spring:message code="label_customer" var="labelCustomer"/>
+    <spring:message code="label_customer_address" var="labelCustomerAddress"/>
+    <spring:message code="label_customer_phone" var="labelCustomerPhone"/>
+    <spring:message code="label_case_barcode" var="labelBarcode"/>
+    <spring:message code="label_case_incomdate" var="labelIncomDate"/>
+    <spring:message code="label_case_outdate" var="labelOutDate"/>
+    <spring:message code="label_case_desc" var="labelCaseDescription"/>
+    <spring:message code="label_case_result" var="labelCaseResult"/>
+    <spring:message code="label_case_paymentstatus" var="labelPaymentStatus"/>
+    <spring:message code="label_case_amount" var="labelTotalAmount"/>
+    <spring:message code="label_case_update" var="labelCaseUpdate"/>
+    <spring:message code="label_date_format" var="labelDateFormat"/>
+    <spring:message code="label_case_payed" var="labelCasePayed"/>
+    <spring:message code="label_case_notpayed" var="labelCaseNotPayed"/>
+    <spring:message code="label_case_clientId" var="labelClientId"/>
+    <spring:message code="label_case_new" var="labelCaseNew"/>
+    <spring:url value="/cases" var="editCaseUrl"/>
+    <script type="text/javascript">
+        $(function() {
+            $('#customer').autocomplete ({
+                minlength: 2,
+                delay: 500,
+                /*source: function (request, response){
+                    $.getJSON("${editCaseUrl}/ajax/findcustomer", request, function (result){
+                        response($.map(result, function (item) {
+                            return {
+                                label: item.lastName,
+                                value: item.id
+                            }
+                        }));
+                    });
+                }*/
+                source: function(request, response){
+                    $.ajax({
+                        url: "${editCaseUrl}/ajax/findcustomer",
+                        dataType: "json",
+                        method: "GET",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data){
+                            response ($.map(data), function (item) {
+                                return {
+                                    label: item.lastName,
+                                    value: item.id
+                                };
+                            });
+                        }
+                        /*select:function (event, ui){
+                            log( "Selected: " + ui.item.value + " aka " + ui.item.id );
+                        }*/
+                    });
+                }
+            });
+        });
+    </script>
+    <html>
+    <head><title>${labelCaseNew}</title></head>
+    <body>
+    <h1>${labelCaseNew}</h1>
+    <div id="caseCreate">
+        <form:form modelAttribute="troubleDTO" method="post">
+            <c:if test="${not empty message}">
+                <div id="message" class="${message.type}">"${message.message}"</div>
+            </c:if>
+            <div>
+                <form:label path="customer">${labelCustomer}</form:label>
+                <form:input path="customer" id="customer"/>
+                <form:errors path="customer" cssClass="error"/>
+            </div>
+            <div>
+                <form:label path="address">${labelCustomerAddress}</form:label>
+                <form:input path="address"/>
+                <form:errors path="address" cssClass="error"/>
+            </div>
+            <div>
+                <form:label path="phone">${labelCustomerPhone}</form:label>
+                <form:input path="phone"/>
+                <form:errors path="phone" cssClass="error"/>
+            </div>
+            <!--<div>
+                <form:label path="barcode">${labelBarcode}</form:label>
+                <form:input path="barcode"/>
+                <form:errors path="barcode" cssClass="error"/>
+            </div>-->
+            <div>
+                <form:label path="incomDate">${labelIncomDate}</form:label>
+                <form:input path="incomDate" type="date"/>
+            </div>
+            <br/>
+            <button type="submit">Save</button>
+            <button type="reset">Reset</button>
+        </form:form>
+    </div>
+
+    </body>
+    </html>
+</jsp:root>

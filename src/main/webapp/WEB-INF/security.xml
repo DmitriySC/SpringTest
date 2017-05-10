@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/security
+             http://www.springframework.org/schema/security/spring-security.xsd">
+    <http use-expressions="true" >
+        <intercept-url pattern="/*" access="permitAll"/>
+        <!--<intercept-url pattern="/login" access="permitAll"/>
+        <intercept-url pattern="/registration" access="permitAll"/>
+        <intercept-url pattern="/*" access="hasRole('ROLE_ROOT')"/>
+        <intercept-url pattern="/troubles/*" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/clients*" access="hasRole('ROLE_ADMIN')"/>-->
+        <form-login login-page="/login"
+                    authentication-failure-url="/login?error"
+                    always-use-default-target="true"
+                    default-target-url="/workspace" />
+        <logout logout-success-url="/"/>
+        <session-management>
+            <concurrency-control max-sessions="1" error-if-maximum-exceeded="true" expired-session-strategy-ref="" />
+        </session-management>
+    </http>
+    <global-method-security secured-annotations="enabled" />
+    <authentication-manager>
+        <authentication-provider user-service-ref="userDetailService">
+            <password-encoder ref="bcryptBean"/>
+        </authentication-provider>
+    </authentication-manager>
+    <beans:bean id="bcryptBean" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+        <beans:constructor-arg name="strength" value="12"/>
+    </beans:bean>
+</beans:beans>
+
+<!--
+Для того чтобы сравнивать с пользователями в базе данных (используя ORM),
+нужно реализовать метод loadUserByUsername интерфейса UserDetailsService и указать в
+<authentication-provider user-service-ref=«userDetailsService» >
+ссылку на bean вашей реализации UserDetailsService.
+
+ Если же вы не используете ORM и вам нужно просто вытянуть из базы пользователей и их права с помощью JDBC,
+ нужно определить DataSource бин с помощью которого Spring будет знать как достучаться до БД и в
+ <authentication-provider> указать ссылку на этот бин и определить два запроса
+ по которым будут вытягиваться нужные данные users-by-username-query и authorities-by-username-query.
+<authentication-provider>
+ 	   <jdbc-user-service data-source-ref="dataSource"
+     	                        users-by-username-query="select username, password, enabled
+      	                                           from users where username = ?"
+      				authorities-by-username-query="select u.username, au.authority
+      	                                                 from users u, authorities au
+       	                                                where u.id = au.user_id and u.username = ?" />
+	</authentication-provider>
+
+<http access-denied-page="/error403.jsp">
+<intercept-url pattern="/index*" access="ROLE_USER,ROLE_ANONYMOUS"/>
+<intercept-url pattern="/add*" access="ROLE_USER"/>
+<intercept-url pattern="/delete/*" access="ROLE_ADMIN"/>
+<form-username username-page="/username.jsp" default-target-url="/index" authentication-failure-url="/username.jsp?error=true"/>
+<logout logout-url="/logout" logout-success-url="/index"/>
+<anonymous username="guest" granted-authority="ROLE_ANONYMOUS"/>
+<remember-me/>
+</http>
+
+<authentication-manager>
+<authentication-provider>
+    <user-service>
+        <user name="admin" password="pass" authorities="ROLE_ADMIN,ROLE_USER"/>
+        <user name="user1" password="1111" authorities="ROLE_USER"/>
+        <user name="user2" password="2222" disabled="true" authorities="ROLE_USER"/>
+    </user-service>
+</authentication-provider>
+</authentication-manager>
+        </beans:beans>
+         -->

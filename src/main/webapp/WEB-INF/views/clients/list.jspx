@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:spring="http://www.springframework.org/tags"
+          version="2.0">
+    <jsp:directive.page contentType="text/html; charset=UTF-8" />
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:message code="label_client_list" var="labelClientList"/>
+    <spring:message code="label_client_client" var="labelClient"/>
+    <spring:message code="label_client_id" var="labelId"/>
+    <spring:message code="label_client_inn" var="labelInn"/>
+    <spring:message code="label_client_specific" var="labelClientSpecific"/>
+
+        <spring:url value="/clients" var="showClientUrl"/>
+    <script type="text/javascript">
+        $(function(){
+                    $("#list").jqGrid({
+                        url:"${showClientUrl}/listgrid",
+                        datatype:"json",
+                        mtype: "GET",
+                        colNames:['${labelId}', '${labelClient}', '${labelInn}', '${labelClientSpecific}'],
+                        colModel:[
+                            {name:"id", index:"id", width:30},
+                            {name:"client", index:"client", width:100},
+                            {name:"inn", index:"inn", width:50},
+                            {name:"clientSpecific", index:"clientSpecific", width:100}],
+                        jsonReader:{
+                            root: "clientData",
+                            page: "currentPage",
+                            total: "totalPages",
+                            records: "totalRecords",
+                            repeatitems: false,
+                            id: "id"
+                        },
+                        pager: "#pager",
+                        rowNum: 10,
+                        rowList:[10,20,30],
+                        sortname: "id",
+                        sortorder: "asc",
+                        viewrecords: true,
+                        gridview: true,
+                        height: 500,
+                        //autoheight: true,
+                        autowidth: true,
+                        autoencode: true,
+                        caption: "${labelClientList}",
+                        onSelectRow: function(id){document.location.href="${showClientUrl}/" + id;}
+                    });
+                });
+        </script>
+<h1>${labelClientList}</h1>
+    <c:if test="${not empty message}">
+        <div id="message" class="${message.type}">${message.message}</div>
+    </c:if>
+    <div>
+        <table id="list"><tr><td/></tr></table>
+    </div>
+    <div id="pager"></div>
+</jsp:root>

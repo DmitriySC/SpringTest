@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles
+        Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+    <definition extends="defaultWorkspace" name="workspace">
+        <put-attribute name="body" value="/WEB-INF/views/workspace.jspx"/>
+    </definition>
+    <definition extends="defaultLogin" name="login">
+        <put-attribute name="body" value="/WEB-INF/views/login.jspx"/>
+    </definition>
+    <definition extends="defaultLogin" name="registration">
+        <put-attribute name="body" value="/WEB-INF/views/registration.jspx"/>
+    </definition>
+    <definition extends="default" name="clients/list">
+        <put-attribute name="body" value="/WEB-INF/views/clients/list.jspx"/>
+    </definition>
+    <definition extends="default" name="clients/show">
+        <put-attribute name="body" value="/WEB-INF/views/clients/show.jspx"/>
+    </definition>
+    <definition extends="default" name="clients/update">
+        <put-attribute name="body" value="/WEB-INF/views/clients/edit.jspx"/>
+    </definition>
+    <definition extends="default" name="clients/create">
+        <put-attribute name="body" value="/WEB-INF/views/clients/edit.jspx"/>
+    </definition>
+    <definition extends="defaultTrouble" name="cases/list">
+        <put-attribute name="body" value="/WEB-INF/views/troubles/list.jspx"/>
+    </definition>
+    <definition extends="defaultTrouble" name="cases/show">
+        <put-attribute name="body" value="/WEB-INF/views/troubles/show.jspx"/>
+    </definition>
+    <definition extends="defaultTrouble" name="cases/update">
+        <put-attribute name="body" value="/WEB-INF/views/troubles/edit.jspx"/>
+    </definition>
+    <definition extends="defaultTrouble" name="cases/create">
+        <put-attribute name="body" value="/WEB-INF/views/troubles/edit.jspx"/>
+    </definition>
+</tiles-definitions>

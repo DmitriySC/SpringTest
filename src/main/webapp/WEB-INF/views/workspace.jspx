@@ -1,0 +1,38 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:spring="http://www.springframework.org/tags"
+          version="2.0" xmlns:sec="http://www.springframework.org/security/tags">
+    <html>
+    <head><title>Simple jspx page</title></head>
+    <body>
+
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:message code="label_clients_edit" var="clientsAdminPanel"/>
+    <spring:message code="label_troubles_panel" var="troublesPanel"/>
+    <spring:message code="label_admin_panel" var="adminPanel"/>
+    <spring:message code="label_choose_workspace" var="chooseWorkspace"/>
+    <spring:url value="/clients" var="editClientsUrl"/>
+    <spring:url value="/troubles" var="troublesUrl"/>
+    <spring:url value="/admin" var="clientAdminPanelUrl"/>
+    <h1>
+        ${chooseWorkspace}
+    </h1>
+    <sec:authorize access="hasRole('ROLE_ROOT')">
+        <div>
+            <a href="${editClientsUrl}">${clientsAdminPanel}</a>
+        </div>
+    </sec:authorize>
+    <sec:authorize access="hasRole('ROLE_USER')">
+        <div>
+            <a href="${troublesUrl}">${troublesPanel}</a>
+        </div>
+    </sec:authorize>
+    <sec:authorize access="hasRole('ROLE_ADMIN')">
+        <div>
+            <a href="${clientAdminPanelUrl}">${adminPanel}</a>
+        </div>
+    </sec:authorize>
+</body>
+    </html>
+</jsp:root>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns="http://www.w3.org/1999/xhtml" version="2.0"
+          xmlns:spring="http://www.springframework.org/tags">
+    <jsp:output doctype-root-element="HTML"
+                doctype-system="about:legacy-compat"/>
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:directive.page pageEncoding="UTF-8"/>
+    <spring:url value="/workspace" var="workspaceUrl"/>
+    <!--<spring:message code="label_workSpace_page" var="labelWorkspace"/>-->
+    <spring:url value="/resources/images/kolobki.jpg" var="kolobok"/>
+<html>
+<head><title>404</title></head>
+<body>OOOPS!!! Something wrong!!..<br/>
+Что-то не воркает. Мы уже пилим...<br/>
+<img src="${kolobok}"/><br/>
+<!--<a href="${workspaceUrl}">${labelWorkspace}</a>-->
+</body>
+</html>
+</jsp:root>

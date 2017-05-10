@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:spring="http://www.springframework.org/tags"
+          version="2.0">
+    <jsp:directive.page contentType="text/html; charset=UTF-8" />
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:message code="label_case_list" var="labelCaseList"/>
+    <spring:message code="label_case_barcode" var="labelCaseBarcode"/>
+    <spring:message code="label_case_customer" var="labelCaseCustomer"/>
+    <spring:message code="label_case_incomdate" var="labelCaseIncomDate"/>
+    <spring:message code="label_case_outdate" var="labelCaseOutDate"/>
+    <spring:message code="label_case_paymentstatus" var="labelCasePaymentStatus"/>
+    <spring:message code="label_case_amount" var="labelCaseAmount"/>
+    <spring:url value="/cases" var="showCaseUrl"/>
+
+    <script type="text/javascript">
+        $(function(){
+                    $("#list").jqGrid({
+                        url:"${showCaseUrl}/listgrid",
+                        datatype:"json",
+                        mtype: "GET",
+                        colNames:['${labelCaseIncomDate}', '${labelCaseCustomer}', '${labelCaseBarcode}', '${labelCaseOutDate}', '${labelCaseAmount}', '${labelCasePaymentStatus}'],
+                        colModel:[
+                            {name:"incomDate", index:"incomDateString", width:50, formatter:'date', formatoptions: {srcformat: 'U/1000', newformat:'d.m.Y'}},
+                            {name:"customer", index:"customer", width:100},
+                            {name:"barcode", index:"barcode", width:50},
+                            {name:"outDate", index:"outDateString", width:100, formatter:'date', formatoptions: {srcformat: 'U/1000', newformat:'d.m.Y'}},
+                            {name:"summCase", index:"summCase", width:50},
+                            {name:"paymentStatus", index:"paymentStatus", width:50}],
+
+                        jsonReader:{
+                            root: "troubleData",
+                            page: "currentPage",
+                            total: "totalPages",
+                            records: "totalRecords",
+                            repeatitems: false,
+                            id: "id"
+                        },
+                        pager: "#pager",
+                        rowNum: 10,
+                        rowList:[10,20,30],
+                        sortname: "id",
+                        sortorder: "desc",
+                        viewrecords: true,
+                        gridview: true,
+                        height: 500,
+                        //autoheight: true,
+                        autowidth: true,
+                        autoencode: true,
+                        caption: "${labelCaseList}",
+                        onSelectRow: function(id){document.location.href="${showCaseUrl}/" + id + "?form";}
+                    });
+                });
+        </script>
+<h1>${labelCaseList}</h1>
+    <c:if test="${not empty message}">
+        <div id="message" class="${message.type}">${message.message}</div>
+    </c:if>
+    <div>
+        <table id="list"><tr><td/></tr></table>
+    </div>
+    <div id="pager"></div>
+</jsp:root>
