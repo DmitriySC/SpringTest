@@ -28,18 +28,17 @@
     </beans:bean>-->
     <annotation-driven validator="validator"/>
     <security:global-method-security pre-post-annotations="enabled" jsr250-annotations="enabled" secured-annotations="enabled"/>
-    <beans:bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+    <beans:bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+                id="validator" >
         <beans:property name="validationMessageSource" ref="messageSource"/>
     </beans:bean>
-    <beans:bean
-            class="org.springframework.web.servlet.view.UrlBasedViewResolver"
-            id="tilesViewResolver">
+    <beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
+                id="tilesViewResolver">
         <beans:property name="viewClass"
                         value="org.springframework.web.servlet.view.tiles3.TilesView"/>
     </beans:bean>
-    <beans:bean
-            class="org.springframework.web.servlet.view.tiles3.TilesConfigurer"
-            id="tilesConfigurer">
+    <beans:bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer"
+                id="tilesConfigurer">
         <beans:property name="definitions">
             <beans:list>
                 <beans:value>/WEB-INF/layouts/layouts.xml</beans:value>

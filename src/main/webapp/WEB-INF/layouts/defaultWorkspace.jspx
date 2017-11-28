@@ -35,8 +35,6 @@
             <tiles:insertAttribute name="body"/>
         </div>
     </div>
-    <div id="footer">
-        <tiles:insertAttribute name="footer" ignore="true"/>
-    </div>
+    <tiles:insertAttribute name="footer" ignore="true"/>
     </body>
 </jsp:root>

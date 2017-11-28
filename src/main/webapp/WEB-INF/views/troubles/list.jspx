@@ -20,12 +20,12 @@
                         url:"${showCaseUrl}/listgrid",
                         datatype:"json",
                         mtype: "GET",
-                        colNames:['${labelCaseIncomDate}', '${labelCaseCustomer}', '${labelCaseBarcode}', '${labelCaseOutDate}', '${labelCaseAmount}', '${labelCasePaymentStatus}'],
+                        colNames:["${labelCaseIncomDate}", "${labelCaseCustomer}", "${labelCaseBarcode}", "${labelCaseOutDate}", "${labelCaseAmount}", "${labelCasePaymentStatus}"],
                         colModel:[
-                            {name:"incomDate", index:"incomDateString", width:50, formatter:'date', formatoptions: {srcformat: 'U/1000', newformat:'d.m.Y'}},
+                            {name:"incomDate", index:"incomDateString", width:50, formatter:"date", formatoptions: {srcformat: "U/1000", newformat:"d.m.Y"}},
                             {name:"customer", index:"customer", width:100},
                             {name:"barcode", index:"barcode", width:50},
-                            {name:"outDate", index:"outDateString", width:100, formatter:'date', formatoptions: {srcformat: 'U/1000', newformat:'d.m.Y'}},
+                            {name:"outDate", index:"outDateString", width:100, formatter:"date", formatoptions: {srcformat: "U/1000", newformat:"d.m.Y"}},
                             {name:"summCase", index:"summCase", width:50},
                             {name:"paymentStatus", index:"paymentStatus", width:50}],
 
@@ -40,11 +40,11 @@
                         pager: "#pager",
                         rowNum: 10,
                         rowList:[10,20,30],
-                        sortname: "id",
+                        sortname: "incomDateString",
                         sortorder: "desc",
                         viewrecords: true,
                         gridview: true,
-                        height: 500,
+                        height: 510,
                         //autoheight: true,
                         autowidth: true,
                         autoencode: true,
@@ -53,7 +53,7 @@
                     });
                 });
         </script>
-<h1>${labelCaseList}</h1>
+    <h1>${labelCaseList}</h1>
     <c:if test="${not empty message}">
         <div id="message" class="${message.type}">${message.message}</div>
     </c:if>

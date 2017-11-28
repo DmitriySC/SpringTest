@@ -30,6 +30,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Transactional(readOnly = true)
+    public Client findOne(Long id) {
+        log.info("Finding Client ID: " + id);
+        return clientRepository.findOne(id);
+    }
+
+    @Transactional(readOnly = true)
     public Client findOne(Long id, Set fetchPolicy) {
         log.info("Finding Client ID: " + id);
         Client client = clientRepository.findOne(id);

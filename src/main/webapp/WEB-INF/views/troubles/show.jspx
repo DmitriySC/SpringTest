@@ -5,14 +5,6 @@
           xmlns:form="http://www.springframework.org/tags/form"
           xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
           version="2.0">
-    <script type="text/javascript">
-        $(function() {
-            $("#outDat").datepicker ({
-                dateFormat: 'dd-mm-yy',
-                changeYear: true
-            });
-        });
-    </script>
     <html>
     <body>
 <jsp:directive.page contentType="text/html;charset=UTF-8"/>
@@ -33,38 +25,70 @@
     <spring:message code="label_case_payed" var="labelCasePayed"/>
     <spring:message code="label_case_notpayed" var="labelCaseNotPayed"/>
     <spring:message code="label_case_clientId" var="labelClientId"/>
+    <spring:message code="label_button_save" var="labelButtonSave"/>
+    <spring:message code="label_case_id" var="labelID"/>
     <spring:url value="/cases" var="editCaseUrl"/>
-    <spring:eval expression="troubleDTO.paymentStatus == 1 ? true : false" var="readonly"/>
-<h1>${labelCaseInfo}</h1>
+    <spring:eval expression="troubleDTO.paymentStatus == 1 ? true:false" var="readonly"/>
+    <spring:eval expression="troubleDTO.paymentStatus == 1 ? labelCasePayed:labelCaseNotPayed" var="paymentStatus"/>
+<script type="text/javascript">
+    $(document).ready($(function(){
+        $("#addItemList").jqGrid({
+            url:"${labelItemUrl}/listgrid",
+            datatype: "json",
+            mtype: "GET",
+            colNames: ["${labelItem}", "{labelItemQty}", "${labelItemCost}", "${labelItemTotal}"],
+            colModel: [""],
+            jsonReader:{
+                root: "",
+                page: "",
+                total: "",
+                records: "",
+                repeattimes: "",
+                id: ""
+            },
+            pager: "#pager",
+            rowNum: 10,
+            rowList: [10,20,30],
+            sortName: "",
+            sortOrder: "",
+            viewRecords: "",
+            gridView: "",
+            autoWidth: true,
+            autoEncode: true,
+            caption: "${labelItemList}"
+        })
+    }));
+    </script>
 <div id="caseinfo">
         <form:form modelAttribute="troubleDTO" method="post">
         <c:if test="${not empty message}">
             <div id="message" class="${message.type}">${message.message}</div>
         </c:if>
             <table>
+                <tr>
+                    <td><form:label path="id"> ${labelID}</form:label></td>
+                    <td>${troubleDTO.id}</td>
+                </tr>
                     <tr>
-                        <td>${labelCustomer}</td>
-                        <td><form:input path="customer" readonly="true"/></td>
+                        <td><form:label path="customer"> ${labelCustomer}</form:label></td>
+                        <td>${troubleDTO.customer}</td>
                     </tr>
                     <tr>
-                        <td>${labelCustomerAddress}</td>
-                        <td><form:input path="address" readonly="true"/></td>
-                        <td><form:errors path="address"/></td>
+                        <td><form:label path="address"> ${labelCustomerAddress}</form:label></td>
+                        <td>${troubleDTO.address}</td>
                     </tr>
                     <tr>
-                        <td>${labelCustomerPhone}</td>
-                        <td><form:input path="phone" readonly="true"/></td>
+                        <td><form:label path="phone">${labelCustomerPhone}</form:label></td>
+                        <td><form:input path="phone" readonly="${readonly}"/></td>
                         <td><form:errors path="phone"/></td>
                     </tr>
                     <tr>
                         <td><form:label path="barcode"> ${labelBarcode}</form:label></td>
-                        <td><form:input path="barcode" readonly="true"/></td>
-                        <td><form:errors path="barcode" cssClass="error"/></td>
+                        <td>${troubleDTO.barcode}</td>
                     </tr>
                     <tr>
                         <td><form:label path="incomDate"> ${labelIncomDate}</form:label></td>
                         <td><form:input path="incomDate" type="date" readonly="true"/></td>
-                        <td><form:errors path="incomDate" cssClass="error"/></td>
                     </tr>
                     <tr><!--<fmt:formatDate value="${trouble.incomDate}" pattern="${labelDateFormat}"/>-->
                         <td><form:label path="outDate"> ${labelOutDate}</form:label></td>
@@ -73,31 +97,43 @@
                     </tr>
                     <tr>
                         <td><form:label path="summCase"> ${labelTotalAmount}</form:label></td>
-                        <td><form:input path="summCase" readonly="${readonly}"/></td>
-                        <td><form:errors path="summCase" cssClass="error"/></td>
+                        <td>${troubleDTO.summCase}</td>
                     </tr>
-
                     <tr>
                         <td><form:label path="paymentStatus"> ${labelPaymentStatus}</form:label></td>
-                        <td><form:input path="paymentStatus"/></td>
-                        <td><form:errors path="paymentStatus" cssClass="error"/></td>
+                        <td>${paymentStatus}</td>
                     </tr>
                     <tr>
                         <td><form:label path="result"> ${labelCaseResult}</form:label></td>
-                        <td><form:input path="result" readonly="${readonly}"/></td>
+                        <td><form:textarea path="result" cols="40" rows="5" readonly="${readonly}"/></td>
                         <td><form:errors path="result" cssClass="error"/></td>
                     </tr>
                     <tr>
                     <td><form:label path="caseDesc"> ${labelCaseDescription}</form:label></td>
-                        <td><form:input path="caseDesc" readonly="${readonly}"/></td>
+                        <td><form:textarea path="caseDesc" cols="40" rows="5" readonly="${readonly}"/></td>
                         <td><form:errors path="caseDesc" cssClass="error"/></td>
                     </tr>
-                    <form:hidden path="caseVersion"/>
-                    <form:hidden path="id"/>
+                    <form:hidden path="troubleVersion"/>
                     <form:hidden path="clientId"/>
                     <form:hidden path="customerId"/>
             </table>
-        <button type="submit">Save</button>
+            <table>
+                <tr>
+                    <th>Item</th>
+                    <th width="10%">Cost</th>
+                    <th width="7%">Quantity</th>
+                </tr>
+                <c:forEach items="${troubleDTO.spareList}" var="spare" varStatus="status">
+                    <tr>
+                        <form:hidden path="spareList[${status.index}].id"/>
+                        <!--<td><a href="${editCaseUrl}/spare/${spare.id}">Delete Spare</a> </td>-->
+                        <td><input name="spareList[${status.index}].item" value="${spare.item}" readonly="readonly"/></td>
+                        <td><input name="spareList[${status.index}].sellCost" value="${spare.sellCost}"/></td>
+                        <td><input name="spareList[${status.index}].qty" value="${spare.qty}"/></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        <button type="submit">${labelButtonSave}</button>
     </form:form>
     <!--<a href="${editCaseUrl}/${trouble.id}?form">${labelCaseUpdate}</a>-->
     </div>

@@ -19,6 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.chirkovds.springtest.CheckSecurity;
+import ru.chirkovds.springtest.CompareSpare;
 import ru.chirkovds.springtest.Message;
 import ru.chirkovds.springtest.UrlUtil;
 import ru.chirkovds.springtest.entity.Client;
@@ -32,6 +34,7 @@ import ru.chirkovds.springtest.service.TroubleService;
 import ru.chirkovds.springtest.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +52,8 @@ public class CaseController {
     private ClientService clientService;
     private CustomerService customerService;
     private MessageSource messageSource;
+    private CheckSecurity checkSecurity;
+    private CompareSpare compareSpare;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -62,9 +67,6 @@ public class CaseController {
             @RequestParam(value = "rows", required = false) int rows,
             @RequestParam(value = "sidx", required = false) String sortBy,
             @RequestParam(value = "sord", required = false) String order) {
-        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userName = authUser.getUsername();
-        //System.out.println(userName);
         log.info("Listing cases for grid with page: " + page + " rows: " + rows);
         log.info("Listing cases for grid with sort: " + sortBy + " order: " + order);
 // Обработать поле, по которому производится сортировка
@@ -82,22 +84,22 @@ public class CaseController {
 // Сконструировать страничный запрос для текущей страницы.
 // Примечание: нумерация страниц для Spring Data JPA начинается с О,
 // тогда как в jqGrid - с 1
-        PageRequest pageRequest = null;
+        PageRequest pageRequest;
         if (sort != null) {
             pageRequest = new PageRequest(page - 1, rows, sort);
         } else {
             pageRequest = new PageRequest(page - 1, rows);
         }
-        Long clientID;
-        clientID = userService.findByUsername(userName).getClientId();
-        System.out.println("Cases fo Client ID: " + clientID);
+        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userName = authUser.getUsername();
+        Long clientID = userService.findByUsername(userName).getClientId();
+        //System.out.println("Cases fo Client ID: " + clientID);
         Page<Trouble> troublePage = troubleService.findByClientId(clientID, pageRequest);
         TroubleGrid troubleGrid = new TroubleGrid();
         troubleGrid.setCurrentPage(troublePage.getNumber() + 1);
         troubleGrid.setTotalPages(troublePage.getTotalPages());
         troubleGrid.setTotalRecords(troublePage.getTotalElements());
         troubleGrid.setTroubleData(Lists.newArrayList(troublePage.iterator()));
-        //troubleGrid.setCustomers();
         return troubleGrid;
     }
 
@@ -105,11 +107,10 @@ public class CaseController {
     @ResponseBody
     public List<Customer> ajaxCustomer (@RequestParam (value = "term", required = true) String ajaxTerm){
         log.info("AJAX. Finding customer like: " + ajaxTerm);
-        //ajaxTerm = "%" + ajaxTerm + "%";
-        List<Customer> customer = customerService.findFirst10ByLastNameContaining(ajaxTerm);
+        List<Customer> customer = customerService.findByLastNameContaining(ajaxTerm);
         System.out.println("AJAX. Customer: " + customer);
         return customer;
-    }
+}
 
     //@Secured(value = {"ROLE_ROOT"})
     @RequestMapping(method = RequestMethod.GET)
@@ -135,24 +136,28 @@ public class CaseController {
         return "cases/show";
     }*/
 
+    @Transactional(readOnly = true)
     @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
         Set<String> policySet = new HashSet<String>(2, 1.0f);
         policySet.add("Customer");
         policySet.add("Client");
+        policySet.add("Spare");
         Trouble trouble = troubleService.findOne(id, policySet);
         TroubleDTO troubleDTO = new TroubleDTO(trouble);
-
-        System.out.println(troubleDTO.getIncomDate());
-        System.out.println(troubleDTO.getOutDate());
-        uiModel.addAttribute("troubleDTO", troubleDTO);
-        return "cases/show";
+        if (checkSecurity.checkTrouble(troubleDTO)) {
+            System.out.println(troubleDTO);
+                    uiModel.addAttribute("troubleDTO", troubleDTO);
+            return "cases/show";
+        }
+        else return "403";
     }
 
     @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.POST)
-    public String update(/*@Valid */TroubleDTO troubleDTO, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes, Locale locale) {
+    public String update(@Valid TroubleDTO troubleDTO, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes, Locale locale) {
         log.info("Updating case: " + troubleDTO.getId());
         if (bindingResult.hasErrors()) {
+            log.error("Binding error!" + bindingResult.toString());
             uiModel.addAttribute("message", new Message("error", messageSource.getMessage("case_save_fail", new Object[]{}, locale)));
             uiModel.addAttribute("troubleDTO", troubleDTO);
             return "cases/show";
@@ -160,42 +165,49 @@ public class CaseController {
         uiModel.asMap().clear();
         redirectAttributes.addFlashAttribute("message", new Message("success", messageSource.getMessage("case_save_success", new Object[]{}, locale)));
 
-        Trouble trouble = troubleService.findOne(troubleDTO.getId(), new HashSet<String>());
-        /*System.out.println("Converting:");
-        System.out.println("IncomDate: old date: " + trouble.getIncomDate() + ". New date: " + troubleDTO.getIncomDate());
-        System.out.println("OutDate: old date: " + trouble.getOutDate() + ". New date: " + troubleDTO.getOutDate());*/
-        trouble.setId(troubleDTO.getId());
-        trouble.setBarcode(troubleDTO.getBarcode());
-        trouble.setClientId(troubleDTO.getClientId());
-        trouble.setIncomDate(troubleDTO.getIncomDate());
+        Set<String> fetchPolicy = new HashSet<String>();
+        fetchPolicy.add("Customer");
+        fetchPolicy.add("Client");
+        fetchPolicy.add("Spare");
+        Trouble trouble = troubleService.findOne(troubleDTO.getId(), fetchPolicy);
         trouble.setOutDate(troubleDTO.getOutDate());
         trouble.setCaseDesc(troubleDTO.getCaseDesc());
         trouble.setResult(troubleDTO.getResult());
         trouble.setPaymentStatus(troubleDTO.getPaymentStatus());
         trouble.setSummCase(troubleDTO.getSummCase());
-        trouble.setVersion(troubleDTO.getCaseVersion());
+        trouble.setVersion(troubleDTO.getTroubleVersion());
 
-        Client client = clientService.findOne(troubleDTO.getClientId(), new HashSet());
-        Customer customer = customerService.findOne(troubleDTO.getCustomerId());
-        trouble.setClient(client);
+        trouble.setSpareList(compareSpare.compareSpareList(troubleDTO.getSpareList(), trouble.getSpareList()));
+        Customer customer = trouble.getCustomer();
+        customer.setPhone(troubleDTO.getPhone());
         trouble.setCustomer(customer);
         troubleService.saveTrouble(trouble);
-        return "redirect:/cases/" + UrlUtil.encodeUrlPathSegment(trouble.getId().toString(), httpServletRequest) + "?form";
+        return "redirect:/cases/" + UrlUtil.encodeUrlPathSegment(troubleDTO.getId().toString(), httpServletRequest) + "?form";
     }
 
     @RequestMapping(params = "form", method = RequestMethod.POST)
-    public String create(/*@Valid*/ Trouble trouble, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes, Locale locale) {
-        log.info("Creating Case:" + trouble);
+    public String create(@Valid TroubleDTO troubleDTO, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes, Locale locale) {
+        log.info("Creating Case:" + troubleDTO);
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("message", new Message("error", messageSource.getMessage("case_create_fail", new Object[]{}, locale)));
-            uiModel.addAttribute("trouble", trouble);
+            uiModel.addAttribute("troubleDTO", troubleDTO);
             return "cases/create";
         }
         uiModel.asMap().clear();
         redirectAttributes.addFlashAttribute("message", new Message("success", messageSource.getMessage("case_create_success", new Object[]{}, locale)));
+        Trouble trouble = new Trouble();
+        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userName = authUser.getUsername();
+        ru.chirkovds.springtest.entity.User user = userService.findByUsername(userName);
+        Client client = clientService.findOne(user.getClientId(), new HashSet<String>());
+        Customer customer = customerService.findOne(troubleDTO.getCustomerId());
+        trouble.setClient(client);
+        trouble.setCustomer(customer);
+        trouble.setIncomDate(troubleDTO.getIncomDate());
+        trouble.setCaseDesc(troubleDTO.getCaseDesc());
         troubleService.saveTrouble(trouble);
         log.info("Case ID: " + trouble.getId() + "was created success");
-        return "redirect:/cases/" + UrlUtil.encodeUrlPathSegment(trouble.getId().toString(), httpServletRequest);
+        return "redirect:/cases/" + UrlUtil.encodeUrlPathSegment(trouble.getId().toString(), httpServletRequest) + "?form";
     }
 
     @RequestMapping(params = "form", method = RequestMethod.GET)
@@ -206,29 +218,33 @@ public class CaseController {
         log.info(troubleDTO);
         return "cases/create";
     }
-
     @Autowired
     public void setTroubleService(@Qualifier("jpaTroubleService") TroubleService troubleService) {
         this.troubleService = troubleService;
     }
-
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
-
     @Autowired
     public void setUserService(@Qualifier("jpaUserService") UserService userService) {
         this.userService = userService;
     }
-
     @Autowired
     public void setClientService(@Qualifier("jpaClientService") ClientService clientService) {
         this.clientService = clientService;
     }
-
     @Autowired
     public void setCustomerService(@Qualifier("jpaCustomerService") CustomerService customerService) {
         this.customerService = customerService;
+    }
+    @Autowired
+    public void setCheckSecurity(CheckSecurity checkSecurity){
+        this.checkSecurity = checkSecurity;
+    }
+
+    @Autowired
+    public void setCompareSpare (CompareSpare compareSpare) {
+        this.compareSpare = compareSpare;
     }
 }

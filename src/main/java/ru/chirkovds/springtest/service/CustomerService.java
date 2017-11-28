@@ -8,7 +8,7 @@ public interface CustomerService {
 
     List<Customer> findAll();
     Customer findOne(Long id);
-    Customer saveClient(Customer customer);
+    Customer saveCustomer(Customer customer);
     void deleteCustomer(Long id);
-    List<Customer> findFirst10ByLastNameContaining (String like);
+    List<Customer> findByLastNameContaining (String like);
 }

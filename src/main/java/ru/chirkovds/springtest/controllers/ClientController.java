@@ -47,12 +47,11 @@ public class ClientController {
         log.info("Listing clients for grid with sort: " + sortBy + " order: " + order);
 // Обработать поле, по которому производится сортировка
         Sort sort = null;
-        String orderBy = sortBy;
-        if (orderBy != null && order != null) {
+        if (sortBy != null && order != null) {
             if (order.equals("desc")) {
-                sort = new Sort(Sort.Direction.DESC, orderBy);
+                sort = new Sort(Sort.Direction.DESC, sortBy);
             } else {
-                sort = new Sort(Sort.Direction.ASC, orderBy);
+                sort = new Sort(Sort.Direction.ASC, sortBy);
             }
         }
 // Сконструировать страничный запрос для текущей страницы.
@@ -148,7 +147,6 @@ public class ClientController {
     public void setClientService(@Qualifier("jpaClientService") ClientService clientService) {
         this.clientService = clientService;
     }
-
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;

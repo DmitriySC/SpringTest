@@ -8,6 +8,9 @@
     <definition extends="defaultLogin" name="login">
         <put-attribute name="body" value="/WEB-INF/views/login.jspx"/>
     </definition>
+    <definition extends="defaultLogin" name="403">
+        <put-attribute name="body" value="/WEB-INF/views/403.jspx"/>
+    </definition>
     <definition extends="defaultLogin" name="registration">
         <put-attribute name="body" value="/WEB-INF/views/registration.jspx"/>
     </definition>
@@ -23,16 +26,16 @@
     <definition extends="default" name="clients/create">
         <put-attribute name="body" value="/WEB-INF/views/clients/edit.jspx"/>
     </definition>
-    <definition extends="defaultTrouble" name="cases/list">
+    <definition extends="default" name="cases/list">
         <put-attribute name="body" value="/WEB-INF/views/troubles/list.jspx"/>
     </definition>
-    <definition extends="defaultTrouble" name="cases/show">
+    <definition extends="default" name="cases/show">
         <put-attribute name="body" value="/WEB-INF/views/troubles/show.jspx"/>
     </definition>
-    <definition extends="defaultTrouble" name="cases/update">
+    <definition extends="default" name="cases/update">
         <put-attribute name="body" value="/WEB-INF/views/troubles/edit.jspx"/>
     </definition>
-    <definition extends="defaultTrouble" name="cases/create">
+    <definition extends="default" name="cases/create">
         <put-attribute name="body" value="/WEB-INF/views/troubles/edit.jspx"/>
     </definition>
 </tiles-definitions>

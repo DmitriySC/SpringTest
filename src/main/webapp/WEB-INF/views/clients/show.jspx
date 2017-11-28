@@ -23,7 +23,7 @@
     <spring:message code="label_user_role" var="labelUserRole"/>
     <spring:url value="/clients" var="editClientUrl"/>
 <h1>${labelClientInfo}</h1>
-<div id="contactinfo">
+<div id="clientinfo">
    <c:if test="${not empty message}">
         <div id="message" class="${message.type}">${message.message}</div>
     </c:if>

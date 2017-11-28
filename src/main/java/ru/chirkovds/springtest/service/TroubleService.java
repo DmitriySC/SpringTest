@@ -9,6 +9,7 @@ import java.util.Set;
 
 public interface TroubleService {
     List<Trouble> findAll();
+    Trouble findOne(Long id);
     Trouble findOne(Long id, Set<String> fetchPolicy);
     Trouble saveTrouble(Trouble trouble);
     void deleteTrouble(Long id);

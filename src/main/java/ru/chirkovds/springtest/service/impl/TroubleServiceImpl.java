@@ -32,12 +32,19 @@ public class TroubleServiceImpl implements TroubleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Trouble> findByClientId(Long id){
+    public List<Trouble> findByClientId(Long id) {
         log.info("Finding Trouble's for Client ID: " + id);
         List<Trouble> troubleList = Lists.newArrayList(troubleRepository.findByClientId(id));
         Hibernate.initialize(troubleList);
         return troubleList;
     }
+
+    @Transactional(readOnly = true)
+    public Trouble findOne(Long id) {
+        log.info("Finding Trouble ID: " + id);
+        return troubleRepository.findOne(id);
+    }
+
     @Transactional(readOnly = true)
     public Trouble findOne(Long id, Set fetchPolicy) {
         log.info("Finding Trouble ID: " + id);
@@ -56,12 +63,19 @@ public class TroubleServiceImpl implements TroubleService {
                 log.info("Client is not set!!!");
             }
         }
+        if (fetchPolicy.contains("Spare")) {
+            try {
+                Hibernate.initialize(trouble.getSpareList());
+            } catch (NullPointerException e) {
+                log.info("Spare is empty!!!");
+            }
+        }
         return trouble;
     }
 
     public Trouble saveTrouble(Trouble trouble) {
         Trouble savedTrouble = troubleRepository.save(trouble);
-        if(trouble.getId() == null) {
+        if (trouble.getId() == null) {
             log.info("Trouble for Customer_ID: " + trouble.getCustomer().getId() + " inserting.");
         } else {
             log.info("Trouble ID: " + trouble.getClient() + " updating.");
@@ -73,12 +87,14 @@ public class TroubleServiceImpl implements TroubleService {
         troubleRepository.delete(id);
         log.info("Trouble ID: " + id + " was deleted.");
     }
+
     @Transactional(readOnly = true)
-    public Page<Trouble> findByClientId(Long id, Pageable pageable){
+    public Page<Trouble> findByClientId(Long id, Pageable pageable) {
         return troubleRepository.findByClientId(id, pageable);
     }
+
     @Autowired
-    public void setTroubleRepository(TroubleRepository troubleRepository){
+    public void setTroubleRepository(TroubleRepository troubleRepository) {
         this.troubleRepository = troubleRepository;
     }
 }

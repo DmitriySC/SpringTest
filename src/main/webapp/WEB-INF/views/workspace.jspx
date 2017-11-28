@@ -13,7 +13,7 @@
     <spring:message code="label_admin_panel" var="adminPanel"/>
     <spring:message code="label_choose_workspace" var="chooseWorkspace"/>
     <spring:url value="/clients" var="editClientsUrl"/>
-    <spring:url value="/troubles" var="troublesUrl"/>
+    <spring:url value="/cases" var="casesUrl"/>
     <spring:url value="/admin" var="clientAdminPanelUrl"/>
     <h1>
         ${chooseWorkspace}
@@ -22,10 +22,16 @@
         <div>
             <a href="${editClientsUrl}">${clientsAdminPanel}</a>
         </div>
+        <div>
+            <a href="${casesUrl}">${troublesPanel}</a>
+        </div>
+        <div>
+            <a href="${clientAdminPanelUrl}">${adminPanel}</a>
+        </div>
     </sec:authorize>
     <sec:authorize access="hasRole('ROLE_USER')">
         <div>
-            <a href="${troublesUrl}">${troublesPanel}</a>
+            <a href="${casesUrl}">${troublesPanel}</a>
         </div>
     </sec:authorize>
     <sec:authorize access="hasRole('ROLE_ADMIN')">

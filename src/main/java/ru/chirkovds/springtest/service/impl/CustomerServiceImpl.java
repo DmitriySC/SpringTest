@@ -39,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService{
         return customer;
     }
 
-    public Customer saveClient(Customer customer) {
+    public Customer saveCustomer(Customer customer) {
         Customer savedCustomer = customerRepository.saveAndFlush(customer);
         if (customer.getId() == null) {
             log.info("Customer ID: " + customer.getId() + " inserting.");
@@ -54,9 +54,9 @@ public class CustomerServiceImpl implements CustomerService{
         log.info("Customer ID: " + id + " was deleted.");
     }
 
-    public List<Customer> findFirst10ByLastNameContaining (String like){
+    public List<Customer> findByLastNameContaining (String like){
         log.info("Finding Customer like: " + like);
-        return customerRepository.findFirst10ByLastNameContaining(like);
+        return customerRepository.findByLastNameContaining(like);
     }
     @Autowired
     public void setCustomerRepository(CustomerRepository customerRepository){

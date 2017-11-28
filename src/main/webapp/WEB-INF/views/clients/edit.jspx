@@ -14,6 +14,8 @@
     <spring:message code="label_client_phone" var="labelClientPhone"/>
     <spring:message code="label_client_update" var="labelClientUpdate"/>
     <spring:message code="label_client_new" var="labelClientNew"/>
+    <spring:message code="label_button_save" var="labelButtonSave"/>
+    <spring:message code="label_button_reset" var="labelButtonReset"/>
     <spring:eval expression="client.id == null ? labelClientNew:labelClientUpdate" var="formTitle"/>
     <html>
     <head><title>${formTitle}</title></head>
@@ -32,28 +34,24 @@
                 <form:errors path="client" cssClass="error"/>
             </div>
             <div>
-            <form:label path="inn">
-                ${labelInn}
+            <form:label path="inn"> ${labelInn}
             </form:label>
             <form:input path="inn"/>
                 <form:errors path="inn" cssClass="error"/>
             </div>
             <div>
-            <form:label path="address">
-                ${labelClientAddress}
+            <form:label path="address"> ${labelClientAddress}
             </form:label>
             <form:input path="address"/>
                 <form:errors path="address" cssClass="error"/>
             </div>
             <div>
-            <form:label path="phone">
-                ${labelClientPhone}
+            <form:label path="phone"> ${labelClientPhone}
             </form:label>
             <form:input path="phone"/>
                 <form:errors path="phone" cssClass="error"/>
             </div>
-            <form:label path="clientSpecific">
-                ${labelClientSpecific}
+            <form:label path="clientSpecific"> ${labelClientSpecific}
             </form:label>
             <form:select path="clientSpecific">
                 <form:options items="${clientSpecific}"/>
@@ -61,11 +59,10 @@
             <form:hidden path="version"/>
             <form:hidden path="id"/>
             <br/>
-            <button type="submit">Save</button>
-            <button type="reset">Reset</button>
+            <button type="submit">${labelButtonSave}</button>
+            <button type="reset">${labelButtonReset}</button>
         </form:form>
     </div>
-
     </body>
     </html>
 </jsp:root>

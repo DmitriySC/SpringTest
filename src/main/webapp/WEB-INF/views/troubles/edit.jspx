@@ -23,45 +23,46 @@
     <spring:message code="label_case_notpayed" var="labelCaseNotPayed"/>
     <spring:message code="label_case_clientId" var="labelClientId"/>
     <spring:message code="label_case_new" var="labelCaseNew"/>
+    <spring:message code="label_button_save" var="labelButtonSave"/>
+    <spring:message code="label_button_reset" var="labelButtonReset"/>
+    <spring:message code="label_itemList" var="labelItemList"/>
     <spring:url value="/cases" var="editCaseUrl"/>
+    <spring:url value="/item" var="labelItemUrl"/>
     <script type="text/javascript">
-        $(function() {
+        /*$(function() {
+            $("#incomDate").datepicker ({
+                dateFormat: 'dd.mm.yy',
+                regional: 'ru',
+                changeMonth: true,
+                changeYear: true
+            });
+                });*/
+        $(document).ready($(function() {
             $('#customer').autocomplete ({
-                minlength: 2,
+                minLength: 2,
                 delay: 500,
+                timeout: 10000,
                 source: function (request, response){
                     $.getJSON("${editCaseUrl}/ajax/findcustomer", request, function (result){
-                        response($.map(result, function (item) {
+                        var res = $.map(result, function (item) {
                             return {
-                                label: item.lastName,
-                                value: item.id
-                            }
-                        }));
-                    });
+                                label: item.lastName + " " + item.firstName + " " + item.middleName + ", " + new Date(item.birthDate).toLocaleDateString() + ", " + item.phone,
+                                value: item.lastName + " " + item.firstName + " " + item.middleName,
+                                address: item.address,
+                                phone: item.phone,
+                                id: item.id
+                            };
+                        });
+                        response(res);
+                        });
+                    },
+                select: function (event, ui){
+                    $('#address').val(ui.item.address);
+                    $('#phone').val(ui.item.phone);
+                    $('#customerId').val(ui.item.id);
                 }
-                /*source: function(request, response){
-                    $.ajax({
-                        url: "${editCaseUrl}/ajax/findcustomer",
-                        dataType: "json",
-                        method: "GET",
-                        data: {
-                            term: request.term
-                        },
-                        success: function (data){
-                            response ($.map(data), function (item) {
-                                return {
-                                    label: item.lastName,
-                                    value: item.id
-                                };
-                            });
-                        }
-                        /*select:function (event, ui){
-                            log( "Selected: " + ui.item.value + " aka " + ui.item.id );
-                        }
-                    });
-                }*/
             });
-        });
+        }));
     </script>
     <html>
     <head><title>${labelCaseNew}</title></head>
@@ -74,34 +75,35 @@
             </c:if>
             <div>
                 <form:label path="customer">${labelCustomer}</form:label>
-                <form:input path="customer" id="customer"/>
+                <form:input id="customer" path="customer"/>
                 <form:errors path="customer" cssClass="error"/>
             </div>
             <div>
                 <form:label path="address">${labelCustomerAddress}</form:label>
-                <form:input path="address"/>
+                <form:input id="address" path="address" readonly="true"/>
                 <form:errors path="address" cssClass="error"/>
             </div>
             <div>
                 <form:label path="phone">${labelCustomerPhone}</form:label>
-                <form:input path="phone"/>
+                <form:input id="phone" path="phone" readonly="true"/>
                 <form:errors path="phone" cssClass="error"/>
             </div>
-            <!--<div>
-                <form:label path="barcode">${labelBarcode}</form:label>
-                <form:input path="barcode"/>
-                <form:errors path="barcode" cssClass="error"/>
-            </div>-->
             <div>
                 <form:label path="incomDate">${labelIncomDate}</form:label>
-                <form:input path="incomDate" type="date"/>
+                <form:input id="incomDate" path="incomDate" type="date"/>
+                <form:errors path="incomDate" cssClass="error"/>
             </div>
+            <div>
+                <form:label path="caseDesc"> ${labelCaseDescription}</form:label>
+                <form:textarea id="caseDesc" path="caseDesc"/>
+                <form:errors path="caseDesc" cssClass="error"/>
+            </div>
+            <form:hidden id="customerId" path="customerId"/>
             <br/>
-            <button type="submit">Save</button>
-            <button type="reset">Reset</button>
+            <button type="submit">${labelButtonSave}</button>
+            <button type="reset">${labelButtonReset}</button>
         </form:form>
     </div>
-
     </body>
     </html>
 </jsp:root>

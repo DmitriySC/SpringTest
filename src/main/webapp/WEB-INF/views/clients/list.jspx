@@ -33,13 +33,13 @@
                             id: "id"
                         },
                         pager: "#pager",
-                        rowNum: 10,
+                        rowNum: 20,
                         rowList:[10,20,30],
                         sortname: "id",
                         sortorder: "asc",
                         viewrecords: true,
                         gridview: true,
-                        height: 500,
+                        height: 510,
                         //autoheight: true,
                         autowidth: true,
                         autoencode: true,
@@ -48,7 +48,6 @@
                     });
                 });
         </script>
-<h1>${labelClientList}</h1>
     <c:if test="${not empty message}">
         <div id="message" class="${message.type}">${message.message}</div>
     </c:if>

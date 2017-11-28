@@ -44,8 +44,8 @@ public class RegistrationController {
     @RequestMapping(method = RequestMethod.GET)
     public String registrationForm(Model uiModel){
         log.info("Registration form for new Client with user");
-        RegistrationDTO registrationDTO = new RegistrationDTO();//
-        uiModel.addAttribute(registrationDTO);//
+        RegistrationDTO registrationDTO = new RegistrationDTO();
+        uiModel.addAttribute(registrationDTO);
         return "registration";
     }
 

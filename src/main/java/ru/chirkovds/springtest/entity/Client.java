@@ -24,6 +24,7 @@ import static javax.persistence.GenerationType.IDENTITY;
      private String phone;
      private List<User> UserList;
      private List<Trouble> TroubleList;
+     private List<Item> itemList;
 
      public Client() {
      }
@@ -124,7 +125,7 @@ import static javax.persistence.GenerationType.IDENTITY;
      }
 
      @JsonIgnore
-     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = {CascadeType.ALL})
+     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
      public List<Trouble> getTroubleList() {
          return this.TroubleList;
      }
@@ -136,6 +137,21 @@ import static javax.persistence.GenerationType.IDENTITY;
      public void addTrouble(Trouble trouble) {
          trouble.setClient(this);
          getTroubleList().add(trouble);
+     }
+
+     @JsonIgnore
+     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = {CascadeType.ALL})
+     public List<Item> getItemList() {
+         return this.itemList;
+     }
+
+     public void setItemList(List<Item> itemList) {
+         this.itemList = itemList;
+     }
+
+     public void addItem(Item item) {
+         item.setClient(this);
+         getItemList().add(item);
      }
 
      public String toString() {
